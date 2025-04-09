@@ -20,8 +20,8 @@ To get started with this project, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-repository-name.git
-   cd nestjs-backend-task
+   git clone https://github.com/mcdavidsh/digital-vision-nestjs-auth-test
+   cd digital-vision-nestjs-auth-test
    ```
 
 2. **Install Dependencies:**
@@ -69,11 +69,6 @@ NestJS uses Jest as the testing framework. To run the tests, you can use the fol
 ### Unit Tests
 ```bash
 pnpm run test
-```
-
-### End-to-End Tests
-```bash
-pnpm run test:e2e
 ```
 
 ### Test Coverage
@@ -125,9 +120,14 @@ You can test the API using GraphQL. Here's an example of the queries/mutations y
 **Register User:**
 ```graphql
 mutation {
-  register(email: "test@example.com", password: "password123") {
-    id
-    email
+  register(input: { email: "mcdavidobioha@gmail.com", password: "123456", biometricKey: "hello@" }) {
+    message
+    status
+    success
+    data {
+      id
+      email
+    }
   }
 }
 ```
@@ -135,14 +135,28 @@ mutation {
 **Login User (Standard):**
 ```graphql
 mutation {
-  login(email: "test@example.com", password: "password123")
+  login(input: { email: "test@tt.com", password: "123456" }) {
+    message
+    status
+    success
+    data {
+      token
+    }
+  }
 }
 ```
 
 **Biometric Login:**
 ```graphql
 mutation {
-  biometricLogin(biometricKey: "sample_biometric_key")
+  biometricLogin(input: { biometricKey: "hello@" }) {
+    message
+    status
+    success
+    data {
+      token
+    }
+  }
 }
 ```
 
@@ -161,15 +175,28 @@ type User {
   createdAt: Date!
   updatedAt: Date!
 }
-
+type Query {
+  healthCheck: String!
+}
 type Mutation {
-  register(email: String!, password: String!): User!
-  login(email: String!, password: String!): String!
-  biometricLogin(biometricKey: String!): String!
+  register(input: RegisterUserInput!): RegisterResponse!
+  login(input: LoginUserInput!): LoginResponse!
+  biometricLogin(input: BiometricLoginInput!): LoginResponse!
 }
 
-type Query {
-  getUser(id: Int!): User!
+input RegisterUserInput {
+  email: String!
+  biometricKey: String!
+  password: String!
+}
+
+input LoginUserInput {
+  email: String!
+  password: String!
+}
+
+input BiometricLoginInput {
+  biometricKey: String!
 }
 ```
 
@@ -178,14 +205,19 @@ Here's an overview of the project structure:
 
 ```
 src/
-├── auth/
-│   ├── auth.module.ts
-│   ├── auth.service.ts
-│   ├── jwt.strategy.ts
-├── user/
-│   ├── user.module.ts
-│   ├── user.service.ts
-│   ├── user.resolver.ts
+ modules/
+ ├── auth/
+ │   ├── auth.module.ts
+ │   ├── auth.service.ts
+ │   ├── auth.resolver.ts
+ │   ├── auth.service.spec.ts
+ │   |─── dto/
+ │       ├── Auth.ts
+ │       ├── BiometricLoginResponse.ts
+ │       ├── LoginResponse.ts
+ │       ├── RegisterResponse.ts
+ │   |── entities/
+ │       ├── user.entity.ts
 ├── app.module.ts
 ├── main.ts
 prisma/
